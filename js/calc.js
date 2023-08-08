@@ -3,23 +3,34 @@ let b = '';
 let sign = '';
 
 const current = document.querySelector('.current-operand');
+const prev = document.querySelector('.prev-operand');
 
 document.querySelector('.data-all-clear').addEventListener('click', () => {
     a = '';
     b = '';
     sign = '';
     current.innerHTML = ''
+    prev.innerHTML = ''
     console.clear();
 });
 
 let numbers = document.querySelectorAll('.data-number');
 
 numbers.forEach(button => {
-    if (current.innerHTML === 'Error!') {
-        return
-    }
-
     button.addEventListener('click', () => {
+        if (current.innerHTML === 'Error!') {
+            return
+        }
+
+        if (a !== '' && sign !== '' && b !== '' && button.innerHTML === '.') {
+            if (b.includes('.') && button.innerHTML === '.') {
+                return
+            }
+            b += '.';
+            prev.innerHTML += '.';
+            current.innerHTML = b;
+        }
+
         if (current.innerHTML === '' && button.innerHTML === '.') {
             return
         } else if (sign !== '' && button.innerHTML === '.') {
@@ -28,18 +39,26 @@ numbers.forEach(button => {
 
         if (current.innerHTML === '0' && button.innerHTML === '0') {
             return
-        } else if (a === '0' && button.innerHTML === '.') {
+        } 
+
+        if ((a.includes('.')) && button.innerHTML === '.') {
+            return
+        }
+
+        if (a === '0' && button.innerHTML === '.') {
             a += '.'.slice(0, -1)
         } else if (a === '0' && button.innerHTML) {
             a = button.innerHTML.slice(0, -1);
         } else if (b === '0' && button.innerHTML) {
-            b = button.innerHTML.slice(0, -1)
+            b += '.'.slice(0, -1)
         }
 
         if (b === '' && sign === '') {
+            prev.innerHTML += button.innerHTML;
             a += button.innerHTML;
             current.innerHTML = a;
         } else if (a !== '' && sign !== '') {
+            prev.innerHTML += button.innerHTML
             b += button.innerHTML;
             current.innerHTML = b;
         } else {
@@ -54,11 +73,21 @@ numbers.forEach(button => {
 let signs = document.querySelectorAll('.data-operation');
 
 signs.forEach(operation => {
-    if (current.innerHTML === 'Error!') {
-        return
-    }
     operation.addEventListener('click', () => {
-        if (current.innerHTML === '' && operation.innerHTML) {
+        if (prev.innerHTML === '') {
+            return
+        } else {
+            if (prev.innerHTML[prev.innerHTML.length - 1] == sign) {
+                return
+            }
+            prev.innerHTML += operation.innerHTML
+        }
+
+        if (current.innerHTML === 'Error!') {
+            return
+        }
+
+        if (current.innerHTML === '') {
             return
         }
 
@@ -89,6 +118,7 @@ signs.forEach(operation => {
             }
             b = '';
             a = a.toString()
+            prev.innerHTML = a + operation.innerHTML + b;
             current.innerHTML = a;
         }
 
@@ -107,12 +137,15 @@ del.addEventListener('click', () => {
 
     if (a !== '' && sign === '' && b === '') {
         a = a.slice(0, -1);
+        prev.innerHTML = prev.innerHTML.slice(0, -1);
         current.innerHTML = a;
     } else if (a !== '' && sign !== '' && b === '') {
         sign = sign.slice(0, -1);
+        prev.innerHTML = prev.innerHTML.slice(0, -1);
         current.innerHTML = a;
     } else if (a !== '' && sign !== '' && b !== '') {
         b = b.slice(0, -1);
+        prev.innerHTML = prev.innerHTML.slice(0, -1);
         if (b === '') {
             current.innerHTML = sign
         } else {
@@ -128,14 +161,24 @@ sqrt.addEventListener('click', () => {
         return
     }
 
+    if (a !== '' && sign !== '' && b === '') {
+        return
+    }
+
     if (current.innerHTML.includes(a) && sqrt) {
         a = Math.sqrt(a).toString();
+        prev.innerHTML = a;
         current.innerHTML = a;
         console.log(a);
     } else if (current.innerHTML.includes(b) && sqrt) {
         b = Math.sqrt(b).toString();
+        prev.innerHTML = a + sign + b;
         current.innerHTML = b;
         console.log(b);
+    }
+
+    if (b !== '') {
+        prev.innerHTML = a + sign + b;
     }
 })
 
@@ -177,6 +220,7 @@ equals.addEventListener('click', () => {
     sign = '';
     b = '';
     a = a.toString();
+    prev.innerHTML = a;
     current.innerHTML = a;
     console.log(a, sign, b);
 })

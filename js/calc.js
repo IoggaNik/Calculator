@@ -65,6 +65,7 @@ numbers.forEach(button => {
             b += button.innerHTML;
             current.innerHTML += b
         }
+        prev.innerHTML = a + sign + b;
         console.log(a, sign, b);
         return
     })
@@ -74,48 +75,31 @@ let signs = document.querySelectorAll('.data-operation');
 
 signs.forEach(operation => {
     operation.addEventListener('click', () => {
-        if (prev.innerHTML === '') {
+        if (a === '' && operation.innerHTML === '-') {
+            a = '-' + a;
+            current.innerHTML = a;
+        } else if (sign !== '' && b === '' && operation.innerHTML === '-') {
+            b = '-';
+            current.innerHTML = b;
+        }
+
+        if (current.innerHTML[current.innerHTML.length - 1] === '.') {
             return
-        } else {
-            if (prev.innerHTML[prev.innerHTML.length - 1] == sign) {
-                return
-            }
+        }
+
+        if (prev.innerHTML === '') return
+        else {
+            if (prev.innerHTML[prev.innerHTML.length - 1] == sign) return
             prev.innerHTML += operation.innerHTML
         }
+        if (current.innerHTML === 'Error!') return
 
-        if (current.innerHTML === 'Error!') {
-            return
-        }
-
-        if (current.innerHTML === '') {
-            return
-        }
+        if (current.innerHTML === '' && operation.innerHTML) return
 
         if (a !== '' && b !== '' && sign !== '' && operation.innerHTML) {
-            switch (sign) {
-                case '+':
-                    a = (+a) + (+b)
-                    break;
-                case '-':
-                    a = (+a) - (+b)
-                    break;
-                case '*':
-                    a = (+a) * (+b)
-                    break;
-                case '/':
-                    if (current.innerHTML === '0') {
-                        a = 'Error!'
-                        b = '';
-                        sign = '';
-                        current.innerHTML = a;
-                    } else {
-                        a = (+a) / (+b)
-                    }
-                    break;
-                case '^':
-                    a = a**b
-                    break;
-            }
+
+            result();
+
             b = '';
             a = a.toString()
             prev.innerHTML = a + operation.innerHTML + b;
@@ -131,9 +115,7 @@ signs.forEach(operation => {
 let del = document.querySelector('.data-delete');
 
 del.addEventListener('click', () => {
-    if (current.innerHTML === 'Error!') {
-        return
-    }
+    if (current.innerHTML === 'Error!') return
 
     if (a !== '' && sign === '' && b === '') {
         a = a.slice(0, -1);
@@ -157,13 +139,13 @@ del.addEventListener('click', () => {
 let sqrt = document.querySelector('.data-sqrt');
 
 sqrt.addEventListener('click', () => {
-    if (current.innerHTML === '') {
+    if (a.includes('-') || b.includes('-')) {
         return
     }
 
-    if (a !== '' && sign !== '' && b === '') {
-        return
-    }
+    if (current.innerHTML === '') return
+
+    if (a !== '' && sign !== '' && b === '') return
 
     if (current.innerHTML.includes(a) && sqrt) {
         a = Math.sqrt(a).toString();
@@ -185,14 +167,21 @@ sqrt.addEventListener('click', () => {
 let equals = document.querySelector('.data-equals');
 
 equals.addEventListener('click', () => {
-    if (current.innerHTML === '') {
-        return
-    }
+    if (current.innerHTML === '') return
 
-    if (current.innerHTML === sign) {
-        return
-    }
+    if (current.innerHTML === sign) return
 
+    result();
+
+    sign = '';
+    b = '';
+    a = a.toString();
+    prev.innerHTML = a;
+    current.innerHTML = a;
+    console.log(a, sign, b);
+})
+
+function result() {
     switch (sign) {
         case '+':
             a = (+a) + (+b)
@@ -217,10 +206,11 @@ equals.addEventListener('click', () => {
             a = a**b
             break;
     }
-    sign = '';
-    b = '';
-    a = a.toString();
-    prev.innerHTML = a;
-    current.innerHTML = a;
-    console.log(a, sign, b);
-})
+}
+
+let text = '--';
+let arrText = text.split('');
+arrText.pop();
+let newText = arrText.join();
+text = newText;
+console.log(text);

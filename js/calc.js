@@ -207,10 +207,3 @@ function result() {
             break;
     }
 }
-
-let text = '--';
-let arrText = text.split('');
-arrText.pop();
-let newText = arrText.join();
-text = newText;
-console.log(text);
